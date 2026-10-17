@@ -1,0 +1,394 @@
+
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>OFFSET FREEFIRE OB55</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --bg-color: #050a14;
+  --neon-cyan: #00f3ff;
+  --neon-blue: #0066ff;
+  --neon-dark: #09152e;
+  --glass: rgba(9, 21, 46, 0.6);
+  --border: rgba(0, 243, 255, 0.3);
+  --text-main: #e0f7fa;
+  --text-muted: #7a9eb1;
+}
+html, body {
+  width:100%; min-height:100%;
+  background-color: var(--bg-color);
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(0, 102, 255, 0.15) 0%, transparent 60%),
+    linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 30px 30px, 30px 30px;
+  font-family: 'Courier New', Courier, monospace, -apple-system, sans-serif;
+  color: var(--text-main);
+  user-select:none;
+  overflow-x:hidden;
+  padding-bottom:40px;
+}
+
+.screen { display:none; animation: fadeIn 0.3s ease; }
+.screen.active { display:block; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+
+.header {
+  display:flex; align-items:center; justify-content:center; flex-direction:column;
+  padding:24px 18px 16px; text-align:center;
+  border-bottom:1px solid var(--border);
+  box-shadow:0 4px 20px rgba(0,243,255,0.1);
+  margin-bottom:24px;
+}
+.header h1 {
+  font-size:24px; font-weight:900; letter-spacing:2px;
+  color: #fff; text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-blue);
+  text-transform: uppercase;
+}
+.header p {
+  font-size:11px; letter-spacing:4px; color: var(--neon-cyan);
+  margin-top:8px; opacity: 0.8;
+}
+
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:0 18px; margin-bottom:24px; }
+.grid-1 { display:grid; grid-template-columns:1fr; gap:16px; padding:0 18px; margin-bottom:24px; }
+.btn-tech {
+  background: var(--glass); border: 1px solid var(--border); border-radius:12px;
+  padding:24px 10px; text-align:center; position:relative; overflow:hidden;
+  cursor:pointer; transition:all 0.3s; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.btn-tech::before {
+  content:''; position:absolute; top:0; left:-100%; width:100%; height:2px;
+  background: var(--neon-cyan); transition: all 0.4s;
+}
+.btn-tech:active { transform: scale(0.96); }
+.btn-tech:hover::before { left: 0; }
+.btn-tech.active {
+  background: rgba(0, 243, 255, 0.15); border-color: var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0,243,255,0.4) inset;
+}
+.btn-tech .name { font-size:18px; font-weight:800; color: #fff; letter-spacing:1px; }
+.btn-tech .status { font-size:11px; color: var(--text-muted); margin-top:6px; letter-spacing:1px; }
+
+.offset-container { display:none; padding:0 18px; animation: fadeIn 0.3s ease; }
+.offset-container.active { display:block; }
+
+.offset-title {
+  font-size:14px; font-weight:800; color: var(--neon-cyan);
+  letter-spacing:2px; margin-bottom:12px;
+  text-shadow: 0 0 8px var(--neon-cyan);
+  border-left: 3px solid var(--neon-cyan); padding-left: 10px;
+}
+
+.table-wrap {
+  background: var(--glass); border: 1px solid var(--border);
+  border-radius:12px; overflow-x:auto; margin-bottom:20px;
+}
+table { width:100%; border-collapse:collapse; font-size:12px; white-space: nowrap; }
+th, td { padding:12px 14px; text-align:left; border-bottom:1px solid rgba(0, 243, 255, 0.1); }
+th { background: rgba(0, 243, 255, 0.1); color: var(--neon-cyan); font-weight: 700; letter-spacing: 1px; font-size: 11px; }
+td { color: #b0e0e6; }
+tr:last-child td { border-bottom: none; }
+tr:active { background: rgba(0,243,255,0.05); }
+.highlight { color: #00ff88; font-family: monospace; font-weight: bold; }
+
+.no-offset {
+  background: rgba(255, 50, 50, 0.1);
+  border: 1px solid rgba(255, 50, 50, 0.4);
+  border-radius:12px; padding:24px; text-align:center;
+  color: #ff5555; font-size:14px; font-weight:800; letter-spacing:2px;
+  box-shadow: 0 0 15px rgba(255,50,50,0.2) inset;
+}
+
+.section-title {
+  font-size:12px; font-weight:800; letter-spacing:2px;
+  color: var(--text-muted); text-align:center; margin:30px 0 16px;
+}
+.coming-soon {
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed rgba(255,255,255,0.2);
+  border-radius:12px; padding:16px; text-align:center;
+  color: #666; font-size:12px; letter-spacing:2px; margin-bottom:14px;
+}
+.admin-box {
+  display:flex; justify-content:center; align-items:center; gap:10px;
+  margin:0 18px; padding:14px; border-radius:12px;
+  background: linear-gradient(90deg, rgba(0,102,255,0.2), rgba(0,243,255,0.2));
+  border: 1px solid var(--neon-cyan);
+  box-shadow: 0 0 20px rgba(0,243,255,0.3);
+  text-decoration: none; color: #fff; font-weight: 800; letter-spacing: 1px;
+}
+.admin-box .icon { font-size: 18px; color: var(--neon-cyan); }
+.admin-box .name { color: var(--neon-cyan); text-shadow: 0 0 5px var(--neon-cyan); }
+
+.admin-avatar-wrap { display:flex; justify-content:center; margin-bottom:20px; }
+.admin-avatar {
+  width:70px; height:70px; border-radius:50%; object-fit:cover;
+  border: 2px solid var(--neon-cyan); box-shadow: 0 0 15px var(--neon-cyan);
+}
+
+.back-btn {
+  display:inline-block;
+  margin: 0 18px 20px;
+  padding:10px 20px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--neon-cyan);
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+.back-btn:active { background: rgba(0,243,255,0.1); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>OFFSET FREEFIRE OB55</h1>
+  <p>SYSTEM v2.0 // READY</p>
+</div>
+
+<div class="screen active" id="screen-lang">
+  <div class="grid-1" style="padding-top:40px;">
+    <div class="btn-tech" onclick="selectLang('vi')">
+      <div class="name">🇻🇳 TIẾNG VIỆT</div>
+      <div class="status">VIETNAMESE</div>
+    </div>
+    <div class="btn-tech" onclick="selectLang('en')">
+      <div class="name">🇬🇧 TIẾNG ANH</div>
+      <div class="status">ENGLISH</div>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="screen-module">
+  <div class="grid-1">
+    <div class="btn-tech" onclick="openModule('aim')">
+      <div class="name" id="txt-aim">AIM</div>
+      <div class="status" id="txt-aim-sub">AIMBOT / OFFSET DATA</div>
+    </div>
+    <div class="btn-tech" onclick="openModule('chams')">
+      <div class="name">CHAMS</div>
+      <div class="status" id="txt-chams-sub">COMING SOON</div>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="screen-aim">
+  <div class="back-btn" onclick="goTo('screen-module')">← BACK</div>
+  
+  <div class="grid-2">
+    <div class="btn-tech" data-target="aimdrag">
+      <div class="name" id="txt-drag">AIM DRAG</div>
+      <div class="status">NO OFFSET</div>
+    </div>
+    <div class="btn-tech" data-target="aimmagic">
+      <div class="name" id="txt-magic">AIM MAGIC</div>
+      <div class="status">ACTIVE</div>
+    </div>
+    <div class="btn-tech" data-target="nhetam">
+      <div class="name" id="txt-nhetam">NHẸ TÂM</div>
+      <div class="status">ACTIVE</div>
+    </div>
+    <div class="btn-tech" data-target="aimneck">
+      <div class="name" id="txt-neck">AIM NECK</div>
+      <div class="status">ACTIVE</div>
+    </div>
+    <div class="btn-tech" data-target="aimbody" style="grid-column: 1 / -1;">
+      <div class="name" id="txt-body">AIM BODY</div>
+      <div class="status">ACTIVE</div>
+    </div>
+  </div>
+
+  <div class="offset-container" id="view-aimdrag">
+    <div class="no-offset">⚠ CHƯA CÓ OFFSET</div>
+  </div>
+  
+  <div class="offset-container" id="view-aimmagic">
+    <div class="offset-title">AIM MAGIC DATA</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>OFFSET GỐC</th><th>BYTES GỐC</th><th>SỬA BYTES</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0xD304</td><td>A8 E7 71 3D</td><td class="highlight">5E D4 CA 3D</td></tr>
+          <tr><td>0xD308</td><td>E4 8C 02 3E</td><td class="highlight">E5 8C 02 3E</td></tr>
+          <tr><td>0xD310</td><td>DC 52 39 BD</td><td class="highlight">FC E0 F7 3D</td></tr>
+          <tr><td>0xD314</td><td>27 C1 8B 3C</td><td class="highlight">96 99 A4 3C</td></tr>
+          <tr><td>0xD318</td><td>C0 D0 F8 B9</td><td class="highlight">1F 86 EF B9</td></tr>
+          <tr><td>0xD5F4</td><td>72 4B 72 3D</td><td class="highlight">B0 D1 CA 3D</td></tr>
+          <tr><td>0xD600</td><td>18 04 27 BD</td><td class="highlight">4E 48 F7 3D</td></tr>
+          <tr><td>0xD604</td><td>00 84 A7 37</td><td class="highlight">55 37 8D 3C</td></tr>
+          <tr><td>0xD608</td><td>00 00 80 B1</td><td class="highlight">6C 03 F3 B9</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- NHẸ TÂM CẬP NHẬT OFFSET -->
+  <div class="offset-container" id="view-nhetam">
+    <div class="offset-title">NHẸ TÂM DATA</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>OFFSET GỐC</th><th>HEX GỐC</th><th>HEX SỬA</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0xD300</td><td>A8 E7 71</td><td class="highlight">59 DF CA</td></tr>
+          <tr><td>0xD310</td><td>BD</td><td class="highlight">3D</td></tr>
+          <tr><td>0xD5F4</td><td>72 4B 72</td><td class="highlight">3E 11 CB</td></tr>
+          <tr><td>0xD600</td><td>BD</td><td class="highlight">3D</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="offset-container" id="view-aimneck">
+    <div class="offset-title">AIM NECK DATA</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>OFFSET GỐC</th><th>HEX GỐC</th><th>HEX SỬA</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0x00CC08</td><td>28 F6 8F 3D 0D 3B 38 3E</td><td class="highlight">53 05 5B 3F 53 05 5B 3F</td></tr>
+          <tr><td>0x00E340</td><td>29 5C 8F 3D F0 87 3F 3E</td><td class="highlight">53 05 5B 3F 53 05 5B 3F</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="offset-container" id="view-aimbody">
+    <div class="offset-title">AIM BODY DATA</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>OFFSET GỐC</th><th>TRƯỜNG</th><th>HEX GỐC</th><th>HEX SỬA</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0xD304</td><td>Bán kính đầu nam</td><td>A8 E7 71 3D</td><td class="highlight">5E D4 CA 3D</td></tr>
+          <tr><td>0xD308</td><td>Chiều cao đầu nam</td><td>E4 8C 02 3E</td><td class="highlight">E5 8C 02 3E</td></tr>
+          <tr><td>0xD310</td><td>Tâm X đầu nam</td><td>DC 52 39 BD</td><td class="highlight">FC E0 F7 3D</td></tr>
+          <tr><td>0xD314</td><td>Tâm Y đầu nam</td><td>27 C1 8B 3C</td><td class="highlight">96 99 A4 3C</td></tr>
+          <tr><td>0xD318</td><td>Tâm Z đầu nam</td><td>C0 D0 F8 B9</td><td class="highlight">1F 86 EF B9</td></tr>
+          <tr><td>0xD5F4</td><td>Bán kính đầu nữ</td><td>72 4B 72 3D</td><td class="highlight">B0 D1 CA 3D</td></tr>
+          <tr><td>0xD600</td><td>Tâm X đầu nữ</td><td>18 04 27 BD</td><td class="highlight">4E 48 F7 3D</td></tr>
+          <tr><td>0xD604</td><td>Tâm Y đầu nữ</td><td>00 84 A7 37</td><td class="highlight">55 37 8D 3C</td></tr>
+          <tr><td>0xD608</td><td>Tâm Z đầu nữ</td><td>00 00 80 B1</td><td class="highlight">6C 03 F3 B9</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="screen-chams">
+  <div class="back-btn" onclick="goTo('screen-module')">← BACK</div>
+  <div class="section-title">— CHAMS MODULE —</div>
+  <div style="padding: 0 18px;">
+    <div class="coming-soon" id="txt-chams1">CHAMS NHÂN VẬT<br><span style="font-size:10px; color:var(--neon-cyan); margin-top:5px; display:block;">COMING SOON</span></div>
+    <div class="coming-soon" id="txt-chams2">CHAMS SÚNG<br><span style="font-size:10px; color:var(--neon-cyan); margin-top:5px; display:block;">COMING SOON</span></div>
+  </div>
+</div>
+
+<div class="section-title">— SUPPORT —</div>
+<div class="admin-avatar-wrap">
+  <img class="admin-avatar" src="https://cdn.phototourl.com/member/2026-10-14-637ac9d2-39be-49f5-bde3-c0a5ef424fde.jpg" alt="Admin">
+</div>
+<a href="https://t.me/dolong07" target="_blank" class="admin-box">
+  <span class="icon">✈</span>
+  <span>TELEGRAM: <span class="name">@dolong07</span></span>
+</a>
+
+<script>
+
+const i18n = {
+  vi: {
+    aimSub: "DỮ LIỆU OFFSET",
+    chamsSub: "SẮP RA MẮT",
+    drag: "AIM DRAG",
+    magic: "AIM MAGIC",
+    nhetam: "NHẸ TÂM",
+    neck: "AIM NECK",
+    body: "AIM BODY",
+    noOffset: "⚠ CHƯA CÓ OFFSET",
+    chams1: "CHAMS NHÂN VẬT",
+    chams2: "CHAMS SÚNG"
+  },
+  en: {
+    aimSub: "OFFSET DATA",
+    chamsSub: "COMING SOON",
+    drag: "AIM DRAG",
+    magic: "AIM MAGIC",
+    nhetam: "LIGHT HEAD",
+    neck: "AIM NECK",
+    body: "AIM BODY",
+    noOffset: "⚠ NO OFFSET AVAILABLE",
+    chams1: "PLAYER CHAMS",
+    chams2: "GUN CHAMS"
+  }
+};
+
+let currentLang = 'vi';
+
+
+function goTo(screenId) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(screenId).classList.add("active");
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+function selectLang(lang) {
+  currentLang = lang;
+  applyLang();
+  goTo('screen-module');
+}
+
+
+function applyLang() {
+  const t = i18n[currentLang];
+  document.getElementById("txt-aim-sub").textContent = t.aimSub;
+  document.getElementById("txt-chams-sub").textContent = t.chamsSub;
+  
+  document.getElementById("txt-drag").textContent = t.drag;
+  document.getElementById("txt-magic").textContent = t.magic;
+  document.getElementById("txt-nhetam").textContent = t.nhetam;
+  document.getElementById("txt-neck").textContent = t.neck;
+  document.getElementById("txt-body").textContent = t.body;
+  document.querySelectorAll(".no-offset").forEach(el => {
+    el.textContent = t.noOffset;
+  });
+  document.getElementById("txt-chams1").innerHTML = `${t.chams1}<br><span style="font-size:10px; color:var(--neon-cyan); margin-top:5px; display:block;">${t.chamsSub}</span>`;
+  document.getElementById("txt-chams2").innerHTML = `${t.chams2}<br><span style="font-size:10px; color:var(--neon-cyan); margin-top:5px; display:block;">${t.chamsSub}</span>`;
+}
+
+function openModule(mod) {
+  if (mod === 'aim') goTo('screen-aim');
+  if (mod === 'chams') goTo('screen-chams');
+}
+
+const buttons = document.querySelectorAll('#screen-aim .btn-tech');
+const views = document.querySelectorAll('.offset-container');
+
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    buttons.forEach(b => b.classList.remove('active'));
+    views.forEach(v => v.classList.remove('active'));
+    btn.classList.add('active');
+    
+    const targetId = 'view-' + btn.dataset.target;
+    const targetView = document.getElementById(targetId);
+    if (targetView) targetView.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>
